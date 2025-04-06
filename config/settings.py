@@ -9,7 +9,7 @@ class Config:
     TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
     
     # Настройки Google Cloud
-    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "google_credentials.json")
     
     # Максимальный размер файла (20MB)
     MAX_FILE_SIZE = 20 * 1024 * 1024

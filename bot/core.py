@@ -27,7 +27,16 @@ class VoiceToTextBot:
         self.max_file_size = 20 * 1024 * 1024  # 20MB
         
         # Инициализация клиента Google Speech-to-Text
-        self.speech_client = speech.SpeechClient()
+        try:
+            self.speech_client = speech.SpeechClient()
+        except Exception as e:
+            logger.error(f"Ошибка инициализации Google Speech API: {e}")
+            raise RuntimeError(
+                "Не удалось инициализировать Google Speech API. Проверьте:\n"
+                "1. Файл сервисного аккаунта Google Cloud (указан в GOOGLE_APPLICATION_CREDENTIALS)\n"
+                "2. Доступность API Speech-to-Text в вашем проекте Google Cloud\n"
+                "3. Интернет-соединение сервера"
+            )
     
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
@@ -137,10 +146,14 @@ class VoiceToTextBot:
         await progress_msg.edit_text(text)
 
 def main():
-    # Получаем токен бота из переменных окружения
-    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    # Получаем токен бота из переменных окружения или конфига
+    from config.settings import Config
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN") or Config.TELEGRAM_BOT_TOKEN
     if not bot_token:
-        raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения")
+        print("Ошибка: Не задан TELEGRAM_BOT_TOKEN")
+        print("Добавьте токен в .env файл или в config/settings.py")
+        print("Пример .env файла смотрите в .env.example")
+        raise ValueError("Не задан TELEGRAM_BOT_TOKEN")
     
     bot = VoiceToTextBot(bot_token)
     
